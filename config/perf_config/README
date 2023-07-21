@@ -1,0 +1,7 @@
+需要查看更详细的信息如: 
+1. 打开 CAM_P1 线程中更多的 trace: adb shell "setprop vendor.debug.camera.ulog.mode 0x11"
+2. 查看是否有高温限频, 打开 `mtk_ppm`. TODO: 补个 wiki
+3. dram 频率
+
+生成的 trace 用 perfconv 转化下, 然后双击打开 html 文件.
+TODO: 补个 windows 的 systrace 抓取脚本...

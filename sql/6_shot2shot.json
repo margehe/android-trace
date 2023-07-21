@@ -1,0 +1,49 @@
+/*
+shot2shot:
+T0(系统): 按键抬起 => onShutterClick 开始
+T1(APP): onShutterClick 开始 => [PerformanceTrace] capture 结束
+T2(HAL): [PerformanceTrace] capture 结束 => [PerformanceTrace] Shot2ShotOn 结束
+*/
+// json
+[
+  {
+    "name": ["AppLaunch_dispatchPtr:Up", "EventHub, read input_event start"],
+    "threadName": null,
+    "stage": null,
+    "referPoint": 0,
+    "owner": null,
+    "calcEnd": true,
+    "nearPreviousCnt": 0,
+    "multiFrontBack": false
+  },
+  {
+    "name": ["[PerformanceTrace] onShutterClick"],
+    "stage": "T0",
+    "owner": "系统",
+    "referPoint": 1,
+    "threadName": null, 
+    "calcEnd": false,
+    "nearPreviousCnt": 1111,
+    "multiFrontBack": false
+  },
+  {
+    "name": ["[PerformanceTrace] capture"],
+    "stage": "T1",
+    "owner": "APP",
+    "referPoint": 2,
+    "threadName": null,
+    "calcEnd": true,
+    "nearPreviousCnt": 1111,
+    "multiFrontBack": false
+  },
+  {
+    "name": ["[PerformanceTrace] Shot2ShotOn"],
+    "stage": "T2",
+    "owner": "HAL",
+    "referPoint": 3,
+    "threadName": null,
+    "calcEnd": true,
+    "nearPreviousCnt": 1111,
+    "multiFrontBack": false
+  }
+]

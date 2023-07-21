@@ -1,0 +1,82 @@
+Interactive trace processor shell.
+Usage: ./trace_processor_shell [OPTIONS] trace_file.pb
+
+Options:
+ -h, --help                           Prints this guide.
+ -v, --version                        Prints the version of trace processor.
+ -d, --debug                          Enable virtual table debugging.
+ -W, --wide                           Prints interactive output with double
+                                      column width.
+ -p, --perf-file FILE                 Writes the time taken to ingest the trace                         // 把检查trace文件耗时和查询trace文件耗时写到给定的文件中
+                                      and execute the queries to the given file.
+                                      Only valid with -q or --run-metrics and
+                                      the file will only be written if the
+                                      execution is successful.
+ -q, --query-file FILE                Read and execute an SQL query from a file.
+                                      If used with --run-metrics, the query is
+                                      executed after the selected metrics and
+                                      the metrics output is suppressed.
+ -D, --httpd                          Enables the HTTP RPC server.
+ --http-port PORT                     Specify what port to run HTTP RPC server.
+ -i, --interactive                    Starts interactive mode even after a query
+                                      file is specified with -q or
+                                      --run-metrics.
+ -e, --export FILE                    Export the contents of trace processor
+                                      into an SQLite database after running any
+                                      metrics or queries specified.
+ -m, --metatrace FILE                 Enables metatracing of trace processor
+                                      writing the resulting trace into FILE.
+ --metatrace-buffer-capacity N        Sets metatrace event buffer to capture
+                                      last N events.
+ --metatrace-categories CATEGORIES    A comma-separated list of metatrace
+                                      categories to enable.
+ --full-sort                          Forces the trace processor into performing
+                                      a full sort ignoring any windowing
+                                      logic.
+ --no-ftrace-raw                      Prevents ingestion of typed ftrace events
+                                      into the raw table. This significantly
+                                      reduces the memory usage of trace
+                                      processor when loading traces containing
+                                      ftrace events.
+ --analyze-trace-proto-content        Enables trace proto content analysis in
+                                      trace processor.
+ --crop-track-events                  Ignores track event outside of the
+                                      range of interest in trace processor.
+ --dev                                Enables features which are reserved for
+                                      local development use only and
+                                      *should not* be enabled on production
+                                      builds. The features behind this flag can
+                                      break at any time without any warning.
+
+Standard library:
+ --add-sql-module MODULE_PATH         Files from the directory will be treated
+                                      as a new SQL module and can be used for
+                                      IMPORT. The name of the directory is the
+                                      module name.
+ --override-sql-module MODULE_PATH    Will override trace processor module with
+                                      passed contents. The outer directory will
+                                      specify the module name. Only allowed when
+                                      --dev is specified.
+ --override-stdlib=[path_to_stdlib]   Will override trace_processor/stdlib with
+                                      passed contents. The outer directory will
+                                      be ignored. Only allowed when --dev is
+                                      specified.
+
+Metrics:
+ --run-metrics x,y,z                  Runs a comma separated list of metrics and
+                                      prints the result as a TraceMetrics proto
+                                      to stdout. The specified can either be
+                                      in-built metrics or SQL/proto files of
+                                      extension metrics.
+ --pre-metrics FILE                   Read and execute an SQL query from a file.
+                                      This query is executed before the selected
+                                      metrics and can't output any results.
+ --metrics-output=[binary|text|json]  Allows the output of --run-metrics to be
+                                      specified in either proto binary, proto
+                                      text format or JSON format (default: proto
+                                      text).
+ --metric-extension DISK_PATH@VIRTUAL_PATH
+                                      Loads metric proto and sql files from
+                                      DISK_PATH/protos and DISK_PATH/sql
+                                      respectively, and mounts them onto
+                                      VIRTUAL_PATH.

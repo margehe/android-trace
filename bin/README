@@ -1,0 +1,10 @@
+bin 文件更新说明:
+1. 在源码路径 external/perfetto/tools/trace_processor 或者在 https://get.perfetto.dev/trace_processor 下载最新的 trace_processor,  搜索 trace_processor_shell.exe 关键字找到相应地址更新即可
+2. external/perfetto/tools/record_android_trace 更新: https://raw.githubusercontent.com/google/perfetto/master/tools/record_android_trace
+3. traceconv.exe 的更新地址在 heap_profile 或者 cpu_profile 找查找 (解析trace不需要)
+
+
+版本: 
+23/6/22
+https://commondatastorage.googleapis.com/perfetto-luci-artifacts/v35.0/windows-amd64/trace_processor_shell.exe
+https://commondatastorage.googleapis.com/perfetto-luci-artifacts/v35.0/windows-amd64/traceconv.exe

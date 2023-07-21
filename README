@@ -1,0 +1,10 @@
+使用说明文档: https://transsioner.feishu.cn/docx/ELf0dPo4Ho06BHxLSE5c3vI1nvc
+配置规则: https://transsioner.feishu.cn/docx/BTYIdb2cloAnuZx5vVec55RJnnb
+
+# 23/06/22:
+- 解压 `python_adb_win.zip` 到当前目录
+- "以管理员身份" 运行 setup.bat 生成 bat 文件和右键菜单
+    - 选中文件夹右键或者在文件夹空白处右键: `aTrace 拆解 => 拆解目录下的 trace 文件; aTrace 抓取 => 抓取 trace 并保存到该目录中
+    - 选中单个 trace 文件右键: `aTrace 拆解 => 拆解选中的 trace 文件`
+    - 选中文件夹右键或者在文件夹空白处右键:Transs_PerfTools -> trace 抓取
+- 运行 uninstall.bat 清理注册表并删除生成的文件

@@ -1,0 +1,168 @@
+/*
+camera ID 改变切换拆解:
+T0(系统): AppLaunch_dispatchPtr:Up 终点 => [PerformanceTrace]onCameraSwitch 起始
+T1(APP): [PerformanceTrace]onCameraSwitch 起始 => CameraHal::flush 开始
+T2_1(HAL): CameraHal::flush 开始 => finishCameraOps 结束
+T2_2(APP): finishCameraOps 结束 => connectDevice 前一个 getCameraCharacteristics 起始
+T2_3(HAL): connectDevice 前一个 getCameraCharacteristics 起始 => connectDevice 结束
+T3(Hal): connectDevice 结束 => 第一个 createDefaultRequest 开始
+T4_1(HAL): 第一个 createDefaultRequest 开始 => 第一个 createDefaultRequest 结束
+T4_2(APP): 第一个 createDefaultRequest 结束 => 第一个createStream开始
+T4_3(HAL): 第一个 createStream 开始 => 第一个 configureStreams 结束
+T5(APP): 第一个 configureStreams 结束 => 第 1 submitRequestList 结束
+T6(HAL): submitRequestList结束 => 第一个 first full buffer 前一个 HIDL::ICameraDeviceCallback::processCaptureResult%server
+T7(APP+HAL): 第一个 first full buffer 前一个 HIDL::ICameraDeviceCallback::processCaptureResult%server => [PerformanceTrace] hidePreviewCover 结束
+*/
+// json
+[
+  {
+    // SQL 匹配 slice 的字符串名, 如何带 `%` 字符, 就解析到 `slice.name LIKE` 语句中, 可以考虑全部用 `slice.name LIKE` 语句匹配
+    "name": ["AppLaunch_dispatchPtr:Up", "EventHub, read input_event start", "GestureLauncher:handleCameraGesture"],
+    // 匹配线程名, 默认为空, 就不去匹配.  用 systrace 抓, 也有线程名, 就不用进程名.
+    "threadName": null,   // 只有唯一的就不用加线程名
+    // 空 -- 不属于任何阶段, 实际起点为
+    "stage": null,
+    // 0 --  参考起点, 1 -- 用来查找起始点重要特征点,  2 -- 用来查找参考结束点的重要特征点, 3 --- 参考结束点, 4 -- 其他
+    "referPoint": 0,
+    "owner": null,
+    // slice 的计算点是否为 slice 的 end 点. 从 slice 的结束点开始计算
+    "calcEnd": true,
+    // 查询的 slice 有多个时, 需要从上一个 slice 或者下一个 slice 作为参考查找. 
+    // 如 
+    //   1. 硬启动中的 "HIDL::ICameraDeviceCallback::processCaptureResult%server", 这个数字是 '-1', 
+    //      表示先找下一个的 slice 'first full buffer', 在逆向查找, 逆向与 `first full buffer` 最近的第 1 个即为要找到的 `processCaptureResult`
+    //   2. onDrawFrame 对应的这个 key 要填 `3`, 表示从上一个 `processCaptureResult` 顺向查找, 找到第 3 个即为所找.
+    "nearPreviousCnt": 0,  //0 -- 表取上一个自身, 1 表示取上一个 slice 点最近的第 1 个 slice, -1 表示取离下一个 slice 最近的 1 个的 slice.
+    "multiFrontBack": false  // 在较前和较后都出现多次的, 会干扰查找起点和终点, 需要调过. 如冷启动中的 onDrawFrame 在 connectDevice 之前会出现, 在 first full buffer 前也会出现, 这个标志就为 true
+  },
+  {
+    "name": ["[PerformanceTrace] onCameraSwitch"],
+    "stage": "T0",     // 阶段 T0
+    "owner": "系统",
+    "referPoint": 1,   // 用来查找起始点重要特征点
+    "threadName": null, 
+    "calcEnd": false,  // 从 activityStart 起始点开始算阶段计算, (T0 为 `activityStart 起始点` - `AppLaunch_dispatchPtr:Up 结束点`)
+    "nearPreviousCnt": 1111,
+    "multiFrontBack": false
+  },
+  {
+    "name": ["CameraHal::flush"],
+    "stage": "T1",
+    "owner": "APP",
+    "referPoint": 1,     // 用来查找起始点重要特征点
+    "threadName": null,
+    "calcEnd": false,
+    "nearPreviousCnt": 1111,
+    "multiFrontBack": false
+  },
+  {
+    "name": ["finishCameraOps"],
+    "stage": "T2_1",
+    "owner": "HAL",
+    "referPoint": 1,
+    "threadName": null,
+    "calcEnd": true,
+    "nearPreviousCnt": 1111,
+    "multiFrontBack": false
+  },
+  {
+    "name": ["getCameraCharacteristics"],
+    "stage": "T2_2",
+    "owner": "APP",
+    "referPoint": 1,     // 用来查找起始点重要特征点
+    "threadName": null,
+    "calcEnd": false,
+    "nearPreviousCnt": -1,  // 从下一个 connectDevice 开始逆序找最邻近的 getCameraCharacteristics
+    "multiFrontBack": false
+  },
+  {
+    "name": ["connectDevice"],
+    "stage": "T2_3",
+    "owner": "HAL",
+    "referPoint": 1,
+    "threadName": null,
+    "calcEnd": true,
+    "nearPreviousCnt": 1111,
+    "multiFrontBack": false
+  },
+  {
+    "name": ["createDefaultRequest"],
+    "stage": "T3",
+    "owner": "APP",
+    "referPoint": 4,
+    "threadName": null,
+    "calcEnd": false,
+    "nearPreviousCnt": 1111,
+    "multiFrontBack": false
+  },
+  {
+    "name": ["createDefaultRequest"],
+    "stage": "T4_1",
+    "owner": "HAL",
+    "referPoint": 4,
+    "threadName": null,
+    "calcEnd": true,
+    "nearPreviousCnt": 1111,    // 和 T3 的 createDefaultRequest 是同一个
+    "multiFrontBack": false
+  },
+  {
+    "name": ["createStream"],
+    "stage": "T4_2",
+    "owner": "APP",
+    "referPoint": 4,
+    "threadName": null,
+    "calcEnd": false,
+    "nearPreviousCnt": 1111,
+    "multiFrontBack": false
+  },
+  {
+    "name": ["configureStreams"],
+    "stage": "T4_3",
+    "owner": "HAL",
+    "referPoint": 2,    //  结束点特征点
+    "threadName": null,
+    "calcEnd": true,
+    "nearPreviousCnt": 1111,
+    "multiFrontBack": false
+  },
+  {
+    "name": ["submitRequestList"],
+    "stage": "T5",
+    "owner": "APP",
+    "referPoint": 2,
+    "threadName": null,
+    "calcEnd": true,
+    "nearPreviousCnt": 1111,
+    "multiFrontBack": false
+  },
+  {
+    "name": ["HIDL::ICameraDeviceCallback::processCaptureResult%server"],
+    "stage": "T6",
+    "owner": "HAL",
+    "referPoint": 2,
+    "threadName": null,
+    "calcEnd": true,
+    "nearPreviousCnt": -1,
+    "multiFrontBack": true
+  },
+  {
+    "name": ["%first full buffer"],  // 用来找上一个 processCaptureResult
+    "stage": null,
+    "owner": null,
+    "referPoint": 4,     // 参考结束点
+    "threadName": null,
+    "calcEnd": null,
+    "nearPreviousCnt": 1111,
+    "multiFrontBack": false
+  },
+  {
+    "name": ["[PerformanceTrace] hidePreviewCover"],
+    "stage": "T7",     // 阶段 T0
+    "owner": "APP+HAl",
+    "referPoint": 3,   // 用来查找起始点重要特征点
+    "threadName": null,
+    "calcEnd": true,
+    "nearPreviousCnt": 1111,
+    "multiFrontBack": false   // 在起点处和终点处干扰查找起始点或者终点的
+  },
+]

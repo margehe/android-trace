@@ -1,0 +1,70 @@
+/*
+shot2see ===>
+T0(系统): dispatchMotionLocked(system server) 终点 => [PerformanceTrace]onShutterClick 起始
+T1(APP): [PerformanceTrace]onShutterClick 起始 => [PerformanceTrace]capture 开始
+T2(HAL): [PerformanceTrace]capture 开始 => [PerformanceTrace]onFakePostViewData 开始
+T3(Hal): [PerformanceTrace]onFakePostViewData 开始 => [PerformanceTrace] updateThumbnailView 结束 + 80ms的动画执行
+*/
+// json
+[
+  {
+    "name": ["AppLaunch_dispatchPtr:Up", "EventHub, read input_event start"],
+    "stage": null,
+    "owner": null,
+    "referPoint": 0,
+    "threadName": null,
+    "calcEnd": true,
+    "nearPreviousCnt": 0,
+    "multiFrontBack": false
+  },
+  {
+    "name": ["[PerformanceTrace] onShutterClick"],
+    "stage": "T0",
+    "owner": "系统",
+    "referPoint": 1,  
+    "threadName": null, 
+    "calcEnd": true, 
+    "nearPreviousCnt": 1111,
+    "multiFrontBack": false
+  },
+  {
+    "name": ["[PerformanceTrace] capture"],
+    "stage": "T1",
+    "owner": "APP",
+    "referPoint": 4,
+    "threadName": null,
+    "calcEnd": false,
+    "nearPreviousCnt": 1111,
+    "multiFrontBack": false
+  },
+  {
+    "name": ["[PerformanceTrace] onImageAvailable: PostView","[PerformanceTrace] onFakePostViewData"],
+    "stage": "T2",
+    "owner": "HAL",
+    "referPoint": 4,
+    "threadName": null,
+    "calcEnd": false,
+    "nearPreviousCnt": 1111,
+    "multiFrontBack": false
+  },
+  {
+    "name": ["[PerformanceTrace] updateThumbnailView"],
+    "stage": "T3",
+    "owner": "APP",
+    "referPoint": 3,
+    "threadName": null,
+    "calcEnd": false,
+    "nearPreviousCnt": 1111,
+    "multiFrontBack": false
+  },
+  {
+    "name": ["animator:scaleX,scaleY"],
+    "stage": "T4",
+    "owner": "APP",
+    "referPoint": 4,
+    "threadName": "com.transsion.camera",
+    "calcEnd": true,
+    "nearPreviousCnt": 1,
+    "multiFrontBack": true
+  },
+]
